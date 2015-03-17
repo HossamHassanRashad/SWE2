@@ -117,7 +117,7 @@ public class UserController {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String response(@FormParam("uname") String uname,
 			@FormParam("email") String email, @FormParam("password") String pass) {
-		String serviceUrl = "http://localhost:8888/rest/RegistrationService";
+		String serviceUrl = "http://1-dot-socialnetwork-swe2.appspot.com/rest/RegistrationService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uname=" + uname + "&email=" + email
@@ -172,7 +172,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response search( @FormParam("myemail") String myemail, @FormParam("searchName") String email) {
 		System.out.println(email);
-		String serviceUrl = "http://localhost:8888/rest/searchFriend";
+		String serviceUrl = "http://1-dot-socialnetwork-swe2.appspot.com/rest/searchFriend";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "email=" + email+"&myemail=" + myemail;
@@ -249,7 +249,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response home(@FormParam("uname") String uname,
 			@FormParam("password") String pass) {
-		String serviceUrl = "http://localhost:8888/rest/LoginService";
+		String serviceUrl = "http://1-dot-socialnetwork-swe2.appspot.com/rest/LoginService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uname=" + uname + "&password=" + pass;
@@ -319,7 +319,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response sendRequest(@FormParam("myemail") String myemail,@FormParam("email") String email) {
 		System.out.println("controller "+email);
-		String serviceUrl = "http://localhost:8888/rest/sendRq";
+		String serviceUrl = "http://1-dot-socialnetwork-swe2.appspot.com/rest/sendRq";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "email=" + email+"&myemail=" + myemail;
@@ -385,7 +385,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response checkRequest(@FormParam("myemail") String myemail) {
 		System.out.println("check request controller");
-		String serviceUrl = "http://localhost:8888/rest/checkRq";
+		String serviceUrl = "http://1-dot-socialnetwork-swe2.appspot.com/rest/checkRq";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "myemail=" + myemail;
@@ -451,7 +451,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response acceptRequest(@FormParam("myemail") String myemail,@FormParam("email") String email) {
 		System.out.println("accept request controller");
-		String serviceUrl = "http://localhost:8888/rest/acceptRq";
+		String serviceUrl = "http://1-dot-socialnetwork-swe2.appspot.com/rest/acceptRq";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "email=" + email+"&myemail=" + myemail;
