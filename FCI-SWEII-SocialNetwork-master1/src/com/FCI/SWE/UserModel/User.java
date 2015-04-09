@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.FCI.SWE.Controller.UserController;
 import com.FCI.SWE.Models.UserEntity;
 
 public class User {
@@ -12,6 +13,7 @@ public class User {
 	private String email;
 	private static User currentActiveUser;
 	private long ID;
+	private UserController userController;
 	private User() {
 		// TODO Auto-generated constructor stub
 	}

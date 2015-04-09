@@ -179,4 +179,62 @@ public class Service {
 		}
 		return object.toString();
 	}
+	//***************************************phase2-a***************
+	@POST
+	@Path("/sendMsg")
+	public String sendMsg(@FormParam("myemail") String myemail ,@FormParam("email") String email,@FormParam("msg") String msg) {
+		System.out.println("msg from searvice "+msg);
+		JSONObject object = new JSONObject();
+		Boolean added= UserEntity.saveMsg(myemail,email,msg);
+		System.out.println("back from db");
+		object.put("Status", "OK");
+		object.put("email", email);
+		object.put("myemail", myemail);
+		object.put("msg", msg);
+		return object.toString();
+	}
+	
+	@POST
+	@Path("/showNewMsg")
+	public String showNewMsg(@FormParam("myemail") String myemail ,@FormParam("email") String email) {
+		JSONObject object = new JSONObject();
+		String added= UserEntity.showNewMsg(myemail,email);
+		System.out.println("back from db");
+		object.put("Status", "OK");
+		object.put("email", email);
+		object.put("myemail", myemail);
+		object.put("msg", added);
+		return object.toString();
+	}
+	
+	@POST
+	@Path("/showAllMsg")
+	public String showAllMsg(@FormParam("myemail") String myemail ,@FormParam("email") String email) {
+		JSONObject object = new JSONObject();
+		String added= UserEntity.showAllMsg(myemail,email);
+		System.out.println("back from db");
+		object.put("Status", "OK");
+		object.put("email", email);
+		object.put("myemail", myemail);
+		object.put("msg", added);
+		return object.toString();
+	}
+	
+	@POST
+	@Path("/getnotification")
+	public JSONObject getnotification(String myemail){
+		JSONObject object = new JSONObject();
+		ArrayList<JSONObject> nos;
+		nos = UserEntity.getnotification(myemail);
+		if(!nos.equals(null)){
+			object.put("Status", "OK");
+			object.put("myemail", myemail);
+			object.put("notifications", nos);
+		}else{
+			object.put("Status", "Failed");
+		}
+		
+		return object;
+	}
+
 }

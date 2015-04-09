@@ -11,5 +11,11 @@
 <input type="hidden" name="myemail" value="${it.myemail}">
 <input type="submit" value="Add">
 </form>
+
+<form action="/social/showNewMsg" method="POST">
+<input type="hidden" name="myemail" value="${it.myemail}">
+<input type="hidden" name="email" value="${it.email}">
+<input type="submit" value="showMesseges">
+</form>
 </body>
 </html>

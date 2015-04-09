@@ -1,5 +1,6 @@
 package com.FCI.SWE.Models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -148,7 +149,7 @@ public class UserEntity {
 		employee.setProperty("email", this.email);
 		employee.setProperty("password", this.password);
 		datastore.put(employee);
-
+		
 		return true;
 
 	}
@@ -198,6 +199,19 @@ public class UserEntity {
 			employee.setProperty("friendemail", email);
 			employee.setProperty("Rqstatus", Rqstatus);
 			datastore.put(employee);
+			//**********************************
+			Query gaeQuery2 = new Query("notifications");
+			PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+			List<Entity> list2 = pq2.asList(FetchOptions.Builder.withDefaults());
+			Entity newnoti = new Entity("notifications", list2.size() + 1);
+			newnoti.setProperty("Sender", myemail);
+			newnoti.setProperty("Reciever", email);
+			newnoti.setProperty("Type", "RequestReplyCommand");
+			newnoti.setProperty("Msg", "you have a friend request from "+myemail);
+			newnoti.setProperty("State","unread");
+			datastore.put(newnoti);
+			
+			
 			return true;
 	}
 	public static String checkRequest(String myemail){
@@ -214,17 +228,13 @@ public class UserEntity {
 				System.out.println("sender is " +entity.getProperty("mymail").toString());
 				return sender;
 			}
-//			else if(entity.getProperty("myemail").toString().equals(myemail)
-//					&& entity.getProperty("Rqstatus").equals("pending")) {
-//				String sender = entity.getProperty("friendemail").toString();
-//				//System.out.println("sender is " +entity.getProperty("mymail").toString());
-//				return sender;
-//			}
+
 		}
 
 		return null;
 	}
 	public static String acceptRequest(String myemail){
+		String email;
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		System.out.println("acceptRequest Entity");
@@ -236,14 +246,138 @@ public class UserEntity {
 					&& entity.getProperty("Rqstatus").equals("pending")) {
 				System.out.println("l2ah fel db");
 				entity.setProperty("Rqstatus","accepted");
+				email = entity.getProperty("email").toString();
 				datastore.put(entity);
 				String sender = entity.getProperty("mymail").toString();
 				System.out.println("sender is " +entity.getProperty("mymail").toString());
 				System.out.println("sender is " +entity.getProperty("Rqstatus").toString());
+				//************************************************
+				Query gaeQuery2 = new Query("notifications");
+				PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+				List<Entity> list2 = pq2.asList(FetchOptions.Builder.withDefaults());
+				Entity newnoti = new Entity("notifications", list2.size() + 1);
+				newnoti.setProperty("Sender", myemail);
+				newnoti.setProperty("Reciever", email);
+				newnoti.setProperty("Type", "RequestReplyCommand");
+				newnoti.setProperty("Msg",myemail+" accepted your friend request");
+				newnoti.setProperty("State","unread");
+				datastore.put(newnoti);
+				
+				
 				return sender;
 			}
 		}
 		System.out.println("DB fadya");
 		return null;
+	}
+//*****************phase 2-a********************************
+	public static Boolean saveMsg(String myemail,String email,String msg) {
+		if(myemail.equals(email)){
+			System.out.println("mynf34 tdef nfsk");
+			return false;
+		}
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();	System.out.println("new message");
+			Query gaeQuery = new Query("Messages");
+			PreparedQuery pq = datastore.prepare(gaeQuery);
+			List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+			Entity newMsg = new Entity("Messages", list.size() + 1);
+			newMsg.setProperty("mymail", myemail);
+			newMsg.setProperty("friendemail", email);
+			newMsg.setProperty("message", msg);
+			newMsg.setProperty("seen", "no");
+			datastore.put(newMsg);
+			
+			//*******************
+			Query gaeQuery2 = new Query("notifications");
+			PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+			List<Entity> list2 = pq2.asList(FetchOptions.Builder.withDefaults());
+			Entity newnoti = new Entity("notifications", list2.size() + 1);
+			newnoti.setProperty("Sender", myemail);
+			newnoti.setProperty("Reciever", email);
+			newnoti.setProperty("Type", "MsgReplyCommand");
+			newnoti.setProperty("Msg", "you have a new message from "+myemail);
+			newnoti.setProperty("State","unread");
+			datastore.put(newnoti);
+			return true;
+	}
+	public static String showNewMsg(String myemail,String email) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		String result="";
+		int i=0;
+		Query gaeQuery1 = new Query("Messages");
+		PreparedQuery pq1 = datastore.prepare(gaeQuery1);
+		for (Entity msg1 : pq1.asIterable()) {
+			System.out.println("d5l l looop");
+			if(
+					msg1.getProperty("friendemail").toString().equals(myemail)
+					&&msg1.getProperty("mymail").toString().equals(email)
+					&&msg1.getProperty("seen").toString().equals("no")){
+				msg1.setProperty("seen", "yes");
+				System.out.println("d5l l looop");
+				result +=msg1.getProperty("mymail").toString()+": "+msg1.getProperty("message").toString() + "<br>";
+				datastore.put(msg1);
+			}		}
+		return result;	
+		}
+
+	public static String showAllMsg(String myemail,String email) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		String result="";
+		Query gaeQuery1 = new Query("Messages");
+		PreparedQuery pq1 = datastore.prepare(gaeQuery1);
+		for (Entity msg1 : pq1.asIterable()) {
+			System.out.println("d5l l looop");
+			if(msg1.getProperty("friendemail").toString().equals(email)
+					&&msg1.getProperty("mymail").toString().equals(myemail)
+					){
+				System.out.println("result now if" + result);
+				result +=msg1.getProperty("mymail").toString()+": "+msg1.getProperty("message").toString() + "<br>";
+							}else if(
+					msg1.getProperty("friendemail").toString().equals(myemail)
+					&&msg1.getProperty("mymail").toString().equals(email)){
+				msg1.setProperty("seen", "yes");
+				result +=msg1.getProperty("mymail").toString()+": "+msg1.getProperty("message").toString() + "<br>";
+				System.out.println("result now else" + result);
+				datastore.put(msg1);
+			}
+		}
+		return result;	
+		}
+
+//	public static Boolean setnotfication(String email,String notfication) {
+//		DatastoreService datastore = DatastoreServiceFactory
+//				.getDatastoreService();	System.out.println("new message");
+//			Query gaeQuery = new Query("notifications");
+//			PreparedQuery pq = datastore.prepare(gaeQuery);
+//			List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+//			Entity noti = new Entity("notifications", list.size() + 1);
+//			noti.setProperty("mail", email);
+//			noti.setProperty("event",notfication);
+//			datastore.put(noti);
+//			return true;
+//	}
+	public static ArrayList<JSONObject> getnotification(String myemail){
+		ArrayList<JSONObject> notifications = null;
+		JSONObject obj = null;
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+			Query gaeQuery = new Query("notifications");
+			PreparedQuery pq = datastore.prepare(gaeQuery);
+		for(Entity noti: pq.asIterable()){
+			if(noti.getProperty("Reciever").toString().equals(myemail)
+					&&noti.getProperty("State").toString().equals("unread")){
+				obj.put("Sender", noti.getProperty("Sender").toString());
+				obj.put("Reciever", myemail);
+				obj.put("Msg", noti.getProperty("Msg").toString());
+				obj.put("Type", noti.getProperty("Type").toString());
+				noti.setProperty("State", "read");
+				datastore.put(noti);
+				notifications.add(obj);
+			}
+		}
+			return notifications;
 	}
 }
